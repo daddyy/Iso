@@ -40,10 +40,10 @@ namespace daddyy\Iso {
          * search for exact code by setted buffer
          * @param  string      $code  search value
          * @param  array       $vars  search in
-         * @param  string|null $byKey search by exact key
+         * @param  string|null $byKey search by exact key or auto (auto first match)
          * @return array
          */
-        public static function search(string $code, array $vars, string $byKey = null): array
+        private static function search(string $code, array $vars, string $byKey = null): array
         {
             $result = [];
             if ($byKey) {
@@ -81,7 +81,7 @@ namespace daddyy\Iso {
          * @param  string  $code searched code
          * @return boolean
          */
-        private static function isAplha3(string $code): bollean
+        private static function isAplha3(string $code): boolean
         {
             $result = true;
             if (ctype_alpha($code) == false) {
@@ -93,6 +93,46 @@ namespace daddyy\Iso {
                 throw new \Exception("the string length '" . $code . "' must be 3");
             }
             return $result;
+        }
+
+        /**
+         * getAllDatas for code
+         * @param  string      $from  country|currency|language
+         * @param  string      $code  search string
+         * @param  string|null $byKey name from column field in from or key auto
+         * @return array              array of search items group by countries
+         */
+        public static function getAllBy(string $from, string $code, string $byKey = null): array
+        {
+            $result = [];
+            $alloweds = ['country', 'currency', 'language'];
+            $byKey  = strtolower($byKey);
+            $method = 'get' . ucfirst($byKey);
+            if (in_array($byKey, $alloweds) && $byKey && method_exists(self, $method)) {
+                $temp = self::$method($code, $byKey);
+                if ($temp) {
+                    $result = [$byKey => $temp];
+                    $alpha3 = $temp['alpha3'];
+                    foreach ($alloweds as $key) {
+                        if ($key != $byKey) {
+                            $method = 'get' . ucfirst($key);
+                            $result[$key] = self::$method($alpha3);
+                        }
+                    }
+                }
+            } else {
+                throw new Exception("the string byKey is missing or is not valid currency|language|country|auto");
+            }
+            return $result;
+        }
+
+        /**
+         * [getAuto description]
+         * @param  string $code [description]
+         * @return [type]       [description]
+         */
+        public static function getAuto(string $code): array {
+
         }
 
         /**
