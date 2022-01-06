@@ -4,6 +4,7 @@ namespace daddyy\Iso {
     /**
      * Static class for search the iso norm for lang, currency, country
      * @author fiala.pvl@gmail.com
+     * @todo   search in placeholders that are not valid as alpha codes
      */
     class Iso
     {
@@ -97,6 +98,7 @@ namespace daddyy\Iso {
 
         /**
          * getAllDatas for code
+         * @todo   is not ready cause the alpha codes can be diferent
          * @param  string      $from  country|currency|language
          * @param  string      $code  search string
          * @param  string|null $byKey name from column field in from or key auto
